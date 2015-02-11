@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Section 45</title>
+  <meta id="xcode-display" name="xcode-display" content="render">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, maximum-scale=1.0">
+  <link rel="stylesheet" type="text/css" href="stylesheet.css">
+</head>
+<body>
+<div class="content-wrapper">
+  <section class="section">
+    <p>// Functions as arguments
+func hasAnyMatches(list: Int[], condition: Int -&gt; Bool) -&gt; Bool {
+    for item in list {
+        if condition(item) {
+            return true
+        }
+    }
+    return false
+}
+func lessThanTen(number: Int) -&gt; Bool {
+    return number &lt; 10
+}
+var numbers = [20, 19, 7, 12]
+hasAnyMatches(numbers, lessThanTen)</p>
+<p>// Closures</p>
+<p>numbers.map({
+    (number: Int) -&gt; Int in
+    if number%2 != 0 {
+        return 0
+    } else {
+        let result = 3 * number
+        return result
+    }
+    })</p>
+<p>// Inline closures
+numbers.map({
+    number in 3 * number
+    })</p>
+<p>// Very Short Closures
+sort([1, 5, 3, 12, 2]) { $0 &gt; $1 }</p>
+<p>/// Objects and Classes ---------------------------------------------</p>
+<p>class Shape {
+    var numberOfSides = 0
+    func simpleDescription() -&gt; String {
+        return &quot;A shape with (numberOfSides) sides.&quot;
+    }
+}</p>
+<p>// Access properties and methods
+var shape = Shape()
+shape.numberOfSides = 7
+var shapeDescription = shape.simpleDescription()</p>
+<p>// init / constructor
+class NamedShape {
+    var numberOfSides: Int = 0
+    var name: String</p>
+<pre><code>init(name: String) {
+    self.name = name
+}
+
+func simpleDescription() -&gt; String {
+    return &quot;A shape with \(numberOfSides) sides.&quot;
+}
+</code></pre><p>}</p>
+<p>// Super Classes and Method overriding
+class Square: NamedShape {
+    var sideLength: Double</p>
+<pre><code>init(sideLength: Double, name: String) {
+    self.sideLength = sideLength
+    super.init(name: name)
+    numberOfSides = 4
+}
+
+func area() -&gt;  Double {
+    return sideLength * sideLength
+}
+
+override func simpleDescription() -&gt; String {
+    return &quot;A square with sides of length \(sideLength).&quot;
+}
+</code></pre><p>}
+let test = Square(sideLength: 5.2, name: &quot;my test square&quot;)
+test.area()
+test.simpleDescription()</p>
+<p>// Getters and Setters
+class EquilateralTriangle: NamedShape {
+    var sideLength: Double = 0.0</p>
+<pre><code>init(sideLength: Double, name: String) {
+    self.sideLength = sideLength
+    super.init(name: name)
+    numberOfSides = 3
+}
+
+var perimeter: Double {
+get {
+    return 3.0 * sideLength
+}
+set {
+    sideLength = newValue / 3.0
+}
+}
+
+override func simpleDescription() -&gt; String {
+    return &quot;An equilateral triagle with sides of length \(sideLength).&quot;
+}
+</code></pre><p>}
+var triangle = EquilateralTriangle(sideLength: 3.1, name: &quot;a triangle&quot;)
+triangle.perimeter
+triangle.perimeter = 9.9
+triangle.sideLength</p>
+<p>// willSet and didSet - Will be executed before and after setter respectively
+class TriangleAndSquare {
+    var triangle: EquilateralTriangle {
+    willSet {
+        square.sideLength = newValue.sideLength
+    }
+    }
+    var square: Square {
+    willSet {
+        triangle.sideLength = newValue.sideLength
+    }
+    }
+    init(size: Double, name: String) {
+        square = Square(sideLength: size, name: name)
+        triangle = EquilateralTriangle(sideLength: size, name: name)
+    }
+}
+var triangleAndSquare = TriangleAndSquare(size: 10, name: &quot;another test shape&quot;)
+triangleAndSquare.square.sideLength
+triangleAndSquare.triangle.sideLength
+triangleAndSquare.square = Square(sideLength: 50, name: &quot;larger square&quot;)
+triangleAndSquare.triangle.sideLength</p>
+<p>// Parameter names in methods inside classes
+class Counter {
+    var count: Int = 0
+    func incrementBy(amount: Int, numberOfTimes times: Int) {
+        count += amount * times
+    }
+}
+var counter = Counter()
+counter.incrementBy(2, numberOfTimes: 7)</p>
+<p>// Null / Nil Check
+let optionalSquare: Square? = Square(sideLength: 2.5, name: &quot;optional square&quot;)
+let sideLength = optionalSquare?.sideLength</p>
+<p>/// Enumerations and Structures ----------------------------------------
+enum Rank: Int {
+    case Ace = 1
+    case Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten
+    case Jack, Queen, King
+    func simpleDescription() -&gt; String {
+        switch self {
+        case .Ace:
+            return &quot;ace&quot;
+        case .Jack:
+            return &quot;jack&quot;
+        case .Queen:
+            return &quot;queen&quot;
+        case .King:
+            return &quot;king&quot;
+        default:
+            return String(self.toRaw())
+        }
+    }
+}
+let card = Rank.Jack
+let aceRawValue = card.simpleDescription()</p>
+<p>if let convertedRank = Rank.fromRaw(13) {
+    let threeDescription = convertedRank.simpleDescription()
+}</p>
+<p>// Enums without Raw types
+enum Suit {
+    case Spades, Hearts, Diamonds, Clubs
+    func simpleDescription() -&gt; String {
+        switch self {
+        case .Spades:
+            return &quot;spades&quot;
+        case .Hearts:
+            return &quot;hearts&quot;
+        case .Diamonds:
+            return &quot;diamonds&quot;
+        case .Clubs:
+            return &quot;clubs&quot;
+        }
+    }
+    func color() -&gt; String {
+        switch self {
+        case .Spades, .Clubs:
+            return &quot;black&quot;
+        case .Hearts, .Diamonds:
+            return &quot;red&quot;
+        }
+    }
+}
+let hearts = Suit.Hearts
+let heartsDescription = hearts.simpleDescription()
+hearts.color()</p>
+<p>// Structs
+struct Card {
+    var rank: Rank
+    var suit: Suit
+    func simpleDescription() -&gt; String {
+        return &quot;The (rank.simpleDescription()) of (suit.simpleDescription())&quot;
+    }
+}</p>
+<p>let threeOfSpades = Card(rank: .Three, suit: .Spades)
+let threeOfSpadesDescription = threeOfSpades.simpleDescription()</p>
+<p>// Enumeration with Values
+enum ServerResponse {
+    case Result(String, String)
+    case Error(String)
+}</p>
+<p>let success = ServerResponse.Result(&quot;6:00 am&quot;, &quot;8:09 pm&quot;)
+let failure = ServerResponse.Error(&quot;Out of cheese.&quot;)</p>
+<p>switch success {
+case let .Result(sunrise, sunset):
+    let serverResponse = &quot;Sunrise is at (sunrise) and sunset is at (sunset).&quot;
+case let .Error(error):
+    let serverResponse = &quot;Failure...  (error)&quot;
+}</p>
+<p>/// Protocols and Extensions -----------------------------------------
+protocol ExampleProtocol {
+    var simpleDescription: String { get }
+    mutating func adjust()
+}</p>
+<p>class SimpleClass: ExampleProtocol {
+    var simpleDescription: String = &quot;A very simple class.&quot;
+    var anotherProperty: Int = 69105
+    func adjust() {
+        simpleDescription += &quot;  Now 100% adjusted.&quot;
+    }
+}
+var a = SimpleClass()
+a.adjust()
+let aDescription = a.simpleDescription</p>
+<p>struct SimpleStructure: ExampleProtocol {
+    var simpleDescription: String = &quot;A simple structure&quot;
+    mutating func adjust() {
+        simpleDescription += &quot; (adjusted)&quot;
+    }
+}
+var b = SimpleStructure()
+b.adjust()
+let bDescription = b.simpleDescription</p>
+<p>// Extensions
+extension Int: ExampleProtocol {
+    var simpleDescription: String {
+    return &quot;The number (self)&quot;
+    }
+    mutating func adjust() {
+        self += 42
+    }
+}
+7.simpleDescription</p>
+<p>// Referencing by Protocol</p>
+<p>let protocolValue: ExampleProtocol = a
+protocolValue.simpleDescription
+// protocolValue.anotherProperty  // Uncomment to see the error</p>
+<p>/// Generics -------------------------------------------------------
+func repeat<ItemType>(item: ItemType, times: Int) -&gt; ItemType[] {
+    var result = ItemType<a href=""></a>
+    for i in 0..times {
+        result += item
+    }
+    return result
+}
+repeat(&quot;knock&quot;, 4)</p>
+<p>// Generic Enums
+enum OptionalValue<T> {
+    case None
+    case Some(T)
+}
+var possibleInteger: OptionalValue<Int> = .None
+possibleInteger = .Some(100)</p>
+<p>// Generics with restrictions
+func anyCommonElements <T, U where T: Sequence, U: Sequence, T.GeneratorType.Element: Equatable, T.GeneratorType.Element == U.GeneratorType.Element> (lhs: T, rhs: U) -&gt; Bool {
+    for lhsItem in lhs {
+        for rhsItem in rhs {
+            if lhsItem == rhsItem {
+                return true
+            }
+        }
+    }
+    return false
+}
+anyCommonElements([1, 2, 3], [3])</p>
+
+  </section>
+</div>
+</body>
+</html>
